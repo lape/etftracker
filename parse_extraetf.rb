@@ -1,4 +1,3 @@
-#!ruby
 # Parse ExtraETF holdings table
 
 def get_url(isin)
@@ -6,7 +5,8 @@ def get_url(isin)
 end
 
 def parse_html(doc)
-  stock_names = new_stock_list = ""
+  new_stock_list = ""
+  stock_names = Array.new
 
   doc.css('.table-top-holdings tr').each do |row|
     stock_name = row.css('.col-name a').text.strip
@@ -14,9 +14,12 @@ def parse_html(doc)
       pos = row.css('.col-pos').text.strip
       percent = row.css('.col-val').text.strip
       new_stock_list += "#{pos.ljust(2)} #{stock_name} (#{percent})\n"
-      stock_names += stock_name
+      stock_names << stock_name
     end
   end
 
-  return stock_names, new_stock_list
+  # Return sorted list of stock names for hash comparison
+  # (so hash doesn't change if order of stocks changes)
+  # and full ordered list of stocks for output (new_stock_list)
+  return stock_names.sort.join, new_stock_list
 end
