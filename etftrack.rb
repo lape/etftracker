@@ -13,7 +13,7 @@ ActiveRecord::Base.establish_connection(ENV["DATABASE_URL"])
 
 class Etf < ActiveRecord::Base
   def scrape!
-    # TODO: Support ETF-individual page parsers
+    # TODO: #1 Support ETF-individual page parsers
     html = retrieve_html
     doc = Nokogiri::HTML(html)
     stock_names, new_stock_list = parse_html(doc) # from parse_extraetf.rb
@@ -39,6 +39,7 @@ class Etf < ActiveRecord::Base
 
     self.last_hash = current_hash
     self.stock_list = new_stock_list
+    self.time = Time.now
     self.save!
   end
 end
