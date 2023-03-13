@@ -40,12 +40,12 @@ class Etf < ActiveRecord::Base
     self.last_hash = current_hash
     self.stock_list = new_stock_list
     self.time = Time.now
-    self.save!
+    save
   end
 end
 
 Etf.all.each do |etf|
-  puts "Scraping #{etf.name}..."
+  puts "Checking #{etf.name}..."
   etf.scrape!
   sleep 2
 end
