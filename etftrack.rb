@@ -9,7 +9,10 @@ require "httparty"
 require "nokogiri"
 require_relative "parse_extraetf"
 
+$stdout.sync = true
+print "Retrieving funds list.."
 ActiveRecord::Base.establish_connection(ENV["DATABASE_URL"])
+print ".\n"
 
 class Etf < ActiveRecord::Base
   def scrape!
@@ -17,6 +20,8 @@ class Etf < ActiveRecord::Base
     html = retrieve_html
     doc = Nokogiri::HTML(html)
     stock_names, new_stock_list = parse_html(doc) # from parse_extraetf.rb
+
+    print ".\n"
 
     current_hash = Digest::MD5.hexdigest stock_names
     output_and_save_changes(current_hash, new_stock_list) if current_hash != last_hash
@@ -44,8 +49,10 @@ class Etf < ActiveRecord::Base
   end
 end
 
-Etf.all.each do |etf|
-  puts "Checking #{etf.name}..."
+Etf.all.order(:name).each do |etf|
+  print "Checking #{etf.name} ."
+  # Wait a bit to not trip the server
+  sleep 1
+  print "."
   etf.scrape!
-  sleep 2
 end
