@@ -7,7 +7,13 @@ require "digest"
 require "dotenv/load"
 require "httparty"
 require "nokogiri"
+require "optparse"
 require_relative "parse_extraetf"
+
+options = {}
+OptionParser.new do |opt|
+  opt.on('-s') { |o| options[:show] = true }
+end.parse!
 
 $stdout.sync = true
 print "Retrieving funds list.."
@@ -54,5 +60,12 @@ Etf.all.order(:name).each do |etf|
   # Wait a bit to not trip the server
   sleep 1
   print "."
-  etf.scrape!
+  unless etf.scrape!  # scrape! returns true if change detected
+    if options[:show] # Show all funds if -s flag is set
+      puts
+      puts "#{etf.name}"
+      puts "#{etf.stock_list}"
+      puts
+    end
+  end
 end
