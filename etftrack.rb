@@ -40,7 +40,7 @@ class Etf < ActiveRecord::Base
   end
 
   def output_and_save_changes(current_hash, new_stock_list)
-    puts "\nChange detected in \e[1;32m#{name}\e[0m:\n"
+    puts "\nChange detected in \e[1;32m#{name}\e[0m:\n\n"
     puts "Before:\n"
     puts stock_list
     puts
@@ -55,7 +55,7 @@ class Etf < ActiveRecord::Base
   end
 end
 
-Etf.all.order(:name).each do |etf|
+Etf.all.order(:id).each do |etf|
   print "Checking #{etf.name} ."
   # Wait a bit to not trip the server
   sleep 1
