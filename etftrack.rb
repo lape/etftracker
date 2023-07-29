@@ -12,7 +12,7 @@ require_relative "parse_extraetf"
 
 options = {}
 OptionParser.new do |opt|
-  opt.on('-s') { |o| options[:show] = true }
+  opt.on("-s") { |o| options[:show] = true }
 end.parse!
 
 $stdout.sync = true
@@ -35,7 +35,7 @@ class Etf < ActiveRecord::Base
 
   def retrieve_html
     url = get_url(isin) # from parse_extraetf.rb
-    response = HTTParty.get(url)
+    response = HTTParty.get(url, timeout: 10)
     response.body
   end
 
@@ -63,8 +63,8 @@ Etf.all.order(:id).each do |etf|
   unless etf.scrape!  # scrape! returns true if change detected
     if options[:show] # Show all funds if -s flag is set
       puts
-      puts "#{etf.name}"
-      puts "#{etf.stock_list}"
+      puts etf.name
+      puts etf.stock_list
       puts
     end
   end

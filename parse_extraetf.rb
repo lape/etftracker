@@ -8,7 +8,7 @@ def parse_html(doc)
   new_stock_list = ""
   stock_names = []
 
-  doc.css(".table-top-holdings tr").each do |row|
+  doc.css("#components table tr").each do |row|
     stock_name = row.css(".col-name a").text.strip
     unless stock_name.empty?
       pos = row.css(".col-pos").text.strip
