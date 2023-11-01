@@ -1,8 +1,8 @@
 #!ruby
 # Compare holdings of a ETF with a previous snapshot
 
-require "active_record"
 require "activerecord-cockroachdb-adapter"
+require "active_record"
 require "digest"
 require "dotenv/load"
 require "httparty"
@@ -55,7 +55,7 @@ class Etf < ActiveRecord::Base
   end
 end
 
-Etf.all.order(:id).each do |etf|
+Etf.where(active: true).order(:id).each do |etf|
   print "Checking #{etf.name} ."
   # Wait a bit to not trip the server
   sleep 1
