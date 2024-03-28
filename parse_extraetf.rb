@@ -1,7 +1,7 @@
 # Parse ExtraETF holdings table
 
-def get_url(isin)
-  "https://de.extraetf.com/etf-profile/#{isin}?tab=components"
+def get_url(isin, fund_type)
+  "https://extraetf.com/de/#{fund_type}-profile/#{isin}?tab=components"
 end
 
 def parse_html(doc)

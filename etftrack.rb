@@ -22,7 +22,6 @@ print ".\n"
 
 class Etf < ActiveRecord::Base
   def scrape!
-    # TODO: #1 Support ETF-individual page parsers
     html = retrieve_html
     doc = Nokogiri::HTML(html)
     stock_names, new_stock_list = parse_html(doc) # from parse_extraetf.rb
@@ -34,7 +33,7 @@ class Etf < ActiveRecord::Base
   end
 
   def retrieve_html
-    url = get_url(isin) # from parse_extraetf.rb
+    url = get_url(isin, fund_type) # from parse_extraetf.rb
     response = HTTParty.get(url, timeout: 10)
     response.body
   end
