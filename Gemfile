@@ -1,6 +1,8 @@
 source "https://rubygems.org"
 
-gem "activerecord-cockroachdb-adapter"
+# gem "activerecord-cockroachdb-adapter"
+gem "sqlite3"
+gem "activerecord"
 gem "digest"
 gem "dotenv"
 gem "httparty"
