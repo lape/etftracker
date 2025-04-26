@@ -1,50 +1,26 @@
-#!ruby
-# Compare holdings of a ETF with a previous snapshot
+#!/usr/bin/env ruby
+# Compare holdings of an ETF with a previous snapshot
 
-# require "activerecord-cockroachdb-adapter"
-require "sqlite3"
-require "active_record"
-require "digest"
+require "optparse"
 require "dotenv/load"
+require "active_record"
 require "httparty"
 require "nokogiri"
-require "optparse"
+require "digest"
 require_relative "parse_extraetf"
-
-options = {}
-OptionParser.new do |opt|
-  opt.on("-s") { |o| options[:show] = true }
-end.parse!
-
-$stdout.sync = true
-print "Retrieving funds list.."
-
-begin
-  database_url = ENV["DATABASE_URL"]
-  if database_url.nil? || database_url.empty?
-    puts "\nERROR: DATABASE_URL environment variable not set"
-    exit 1
-  end
-  
-  ActiveRecord::Base.establish_connection(database_url)
-  print ".\n"
-rescue => e
-  puts "\nDatabase connection error: #{e.message}"
-  exit 1
-end
 
 class Etf < ActiveRecord::Base
   def scrape!
     begin
       html = retrieve_html
       doc = Nokogiri::HTML(html)
-      stock_names, new_stock_list = parse_html(doc) # from parse_extraetf.rb
+      stock_names, new_stock_list = parse_html(doc)
 
       print ".\n"
       
       return false if stock_names.empty?
       
-      current_hash = Digest::MD5.hexdigest stock_names
+      current_hash = Digest::MD5.hexdigest(stock_names)
       if current_hash != last_hash
         output_and_save_changes(current_hash, new_stock_list)
         return true
@@ -57,7 +33,7 @@ class Etf < ActiveRecord::Base
   end
 
   def retrieve_html
-    url = get_url(isin, fund_type) # from parse_extraetf.rb
+    url = get_url(isin, fund_type)
     response = HTTParty.get(url, timeout: 10)
     
     unless response.code == 200
@@ -87,7 +63,33 @@ class Etf < ActiveRecord::Base
   end
 end
 
-begin
+def parse_options
+  options = {}
+  OptionParser.new do |opt|
+    opt.on("-s", "Show all funds") { |o| options[:show] = true }
+  end.parse!
+  options
+end
+
+def connect_to_database
+  print "Retrieving funds list.."
+  
+  database_url = ENV["DATABASE_URL"]
+  if database_url.nil? || database_url.empty?
+    puts "\nERROR: DATABASE_URL environment variable not set"
+    exit 1
+  end
+  
+  begin  
+    ActiveRecord::Base.establish_connection(database_url)
+    print ".\n"
+  rescue => e
+    puts "\nDatabase connection error: #{e.message}"
+    exit 1
+  end
+end
+
+def process_etfs(options)
   etfs = Etf.where(active: true).order(:id)
   
   if etfs.empty?
@@ -97,23 +99,30 @@ begin
   
   etfs.each do |etf|
     print "Checking #{etf.name} ."
-    # Wait a bit to not trip the server
-    sleep 1
     print "."
     
-    # scrape! returns true if change detected
     changes_detected = etf.scrape!
     
-    unless changes_detected
-      if options[:show] # Show all funds if -s flag is set
-        puts
-        puts etf.name
-        puts etf.stock_list
-        puts
-      end
+    if !changes_detected && options[:show]
+      puts
+      puts etf.name
+      puts etf.stock_list
+      puts
     end
   end
-rescue => e
-  puts "\nError processing ETFs: #{e.message}"
-  exit 1
 end
+
+def main
+  $stdout.sync = true
+  options = parse_options
+  connect_to_database
+  
+  begin
+    process_etfs(options)
+  rescue => e
+    puts "\nError processing ETFs: #{e.message}"
+    exit 1
+  end
+end
+
+main
