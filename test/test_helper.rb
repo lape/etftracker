@@ -1,0 +1,7 @@
+require "minitest/autorun"
+require "dotenv/load"
+require_relative "../lib/config/database"
+require_relative "../lib/models/etf"
+require_relative "../lib/parsers/extraetf_parser"
+require_relative "../lib/utils/output_formatter"
+require_relative "../lib/utils/error_handler"

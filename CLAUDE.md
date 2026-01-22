@@ -1,5 +1,10 @@
 # ETFTrack Project Guide
 
+Tracks ETF and fund holdings.
+
+## Important Instructions
+- Always read and update ROADMAP.md
+
 ## Commands
 - Run app: `ruby etftrack.rb`
 - Run with showing all funds: `ruby etftrack.rb -s`
