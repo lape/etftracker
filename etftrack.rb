@@ -68,8 +68,7 @@ class EtfTracker
   def display_unchanged_fund(etf)
     Tui::Renderer.clear_progress
     puts
-    puts etf.name
-    puts etf.stock_list
+    Tui::Renderer.render_holdings_box(etf.name, etf.stock_list)
   end
 
   def display_results
