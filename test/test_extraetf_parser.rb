@@ -80,10 +80,14 @@ class TestExtraEtfParser < Minitest::Test
     html = '<div id="components"><table></table></div>'
     doc = Nokogiri::HTML(html)
 
-    stock_names, stock_list = ExtraEtfParser.parse_html(doc)
+    stock_names = stock_list = nil
+    out, _ = capture_io do
+      stock_names, stock_list = ExtraEtfParser.parse_html(doc)
+    end
 
     assert_equal "", stock_names
     assert_equal "No holdings data found", stock_list
+    assert_includes out, "No table rows found"
   end
 
   def test_parse_html_skips_rows_without_name
