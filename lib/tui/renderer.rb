@@ -89,7 +89,7 @@ module Tui
 
     def render_change_header(etf_name)
       title = " Change detected: #{etf_name} "
-      padding = table_width - title.length - 2
+      padding = table_width - title.length - 1
       padding = 0 if padding.negative?
 
       puts "\e[1;32m\u250c\u2500#{title}#{"\u2500" * padding}\u2510\e[0m"

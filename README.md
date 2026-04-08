@@ -30,7 +30,7 @@ ETFTrack scrapes the stock holding composition of ETFs by ISIN and compares them
    # Create .env file from .env.template with your DATABASE_URL
    ```
 
-3. Set up database schema (see etfs.sql for structure)
+3. Set up database schema (see Database Schema section below)
 
 ## Usage
 

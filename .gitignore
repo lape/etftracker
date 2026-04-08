@@ -1,3 +1,4 @@
 .env
 .aigcm_msg
 *.sqlite3
+CLAUDE.md
